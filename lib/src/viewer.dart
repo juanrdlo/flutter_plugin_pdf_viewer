@@ -14,6 +14,7 @@ class PDFViewer extends StatefulWidget {
   final bool showPicker;
   final bool showNavigation;
   final PDFViewerTooltip tooltip;
+  final Function() onTap;
 
   PDFViewer(
       {Key key,
@@ -24,6 +25,7 @@ class PDFViewer extends StatefulWidget {
       this.showPicker = true,
       this.showNavigation = true,
       this.tooltip = const PDFViewerTooltip(),
+      this.onTap,
       this.indicatorPosition = IndicatorPosition.topRight})
       : super(key: key);
 
@@ -36,6 +38,7 @@ class _PDFViewerState extends State<PDFViewer> {
   int _oldPage = 0;
   PDFPage _page;
   List<PDFPage> _pages = List();
+
 
   @override
   void didChangeDependencies() {
@@ -99,6 +102,29 @@ class _PDFViewerState extends State<PDFViewer> {
     }
   }
 
+  Widget _close() {
+    Widget child = GestureDetector(
+        onTap: _pickPage,
+        child:
+        GestureDetector(
+          onTap: widget.onTap,
+          child:
+          Container(
+              padding:
+                  EdgeInsets.only(top: 4.0, left: 16.0, bottom: 4.0, right: 16.0),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.0),
+                  color: widget.indicatorBackground),
+              child:
+              Text("X",
+                  style: TextStyle(
+                      color: widget.indicatorText,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400))))
+        );
+        return Positioned(top: 20, right: 20, child: child);
+  }
+
   _pickPage() {
     showDialog<int>(
         context: context,
@@ -127,6 +153,7 @@ class _PDFViewerState extends State<PDFViewer> {
           (widget.showIndicator && !_isLoading)
               ? _drawIndicator()
               : Container(),
+          _close(),
         ],
       ),
       floatingActionButton: widget.showPicker
